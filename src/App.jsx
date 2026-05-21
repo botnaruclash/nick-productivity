@@ -1047,8 +1047,8 @@ export default function App() {
             <div style={{width:28,height:28,borderRadius:"50%",background:"#0a0a0a",border:`1px solid ${"#1a1a1a"}`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:16,cursor:"pointer"}} onClick={()=>setTab("profile")}>{profile.avatar}</div>
           </div>
         </div>
-        <div style={{fontSize:32,fontWeight:700,letterSpacing:"-0.04em",color:"#ededed",marginBottom:4,textTransform:"capitalize"}}>{todayLabel}</div>
-        <div style={{fontSize:17,color:"#888",fontWeight:400}}>Hey {profile.name}</div>
+        <div style={{fontSize:24,fontWeight:700,letterSpacing:"-0.04em",color:"#ededed",marginBottom:4,textTransform:"capitalize"}}>{todayLabel}</div>
+        <div style={{fontSize:14,color:"#888",fontWeight:400}}>Hey {profile.name}</div>
       </div>
 
       <div style={{padding:"0 16px"}}>

@@ -1058,7 +1058,7 @@ export default function App() {
         {TABS.map(t=>(
           <button key={t.id} onClick={()=>setTab(t.id)} style={{
             padding:"10px 14px",background:"transparent",border:"none",
-            borderBottom:tab===t.id?`2px solid ${"#ededed"}`:"2px solid #000000",
+            borderBottom:tab===t.id?"2px solid #ededed":"2px solid #000000",
             color:tab===t.id?"#ededed":"#555",fontWeight:tab===t.id?600:400,
             fontSize:13,cursor:"pointer",fontFamily:"inherit",whiteSpace:"nowrap",
             marginBottom:-1,letterSpacing:"-0.01em",transition:"color .15s",background:"transparent",

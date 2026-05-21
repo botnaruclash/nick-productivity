@@ -205,7 +205,7 @@ function FoodLog({ entries, onAdd, onDelete, activities }) {
     const sportList = activities.filter(a=>["calisthenics","swimming","climbing"].includes(a.type))
       .map(a=>`${getType(a.type).label} ${fmtDur(a.duration)}${a.steps?" "+a.steps+" pasi":""}`).join(", ")||"niciun sport azi";
     try {
-      const res = await fetch("/api/ai",{
+      const res = await fetch("https://api.anthropic.com/v1/messages",{
         method:"POST",headers:{"Content-Type":"application/json"},
         body:JSON.stringify({
           model:"claude-sonnet-4-20250514",max_tokens:1000,
@@ -281,7 +281,7 @@ function SportAnalysis({ activities, sleep, food, sportNotes, onAddNote, onDelet
     const sleepTotal = sleep.reduce((s,e)=>s+e.hours,0);
     const foodList = food.map(f=>`${f.text} ${f.grams}g`).join(", ")||"nimic logat";
     try {
-      const res = await fetch("/api/ai",{
+      const res = await fetch("https://api.anthropic.com/v1/messages",{
         method:"POST",headers:{"Content-Type":"application/json"},
         body:JSON.stringify({
           model:"claude-sonnet-4-20250514",max_tokens:1000,
@@ -452,7 +452,7 @@ function AICoach({ dayData }) {
     const foodList=(dayData.food||[]).map(f=>`${f.text} ${f.grams}g`).join(", ")||"nimic";
     const waterL=((dayData.water||0)/1000).toFixed(2);
     try {
-      const res=await fetch("/api/ai",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1000,system:`Ești coach de productivitate dur și sincer pentru un tânăr de 18 ani din Chișinău. Obiectiv: €100k vara asta prin vânzări B2B (AI lead triage pentru real estate). Program: Calisthenics Lu/Ma/Jo/Vi 07-10, Înot Mi/Sâ 07-11, Vioară Ma 16:30 și Jo 12:30, Climbing Mi 16:30 și Sâ 12:00, Biserică Du 08:30. Minimum 6h work/zi. Sistem: 10min staring at wall + 2h deep work repeat. Analizează ziua complet și oferă: 1) Evaluare sinceră (2 propoziții) 2) Ce a mers bine 3) Ce schimbi imediat 4) Recomandare pentru mâine. Fii direct, fără bullshit. Română. Max 150 cuvinte.`,messages:[{role:"user",content:`Activități:\n${actSummary||"niciuna"}\nSomn: ${sleepTotal}h\nApă: ${waterL}L\nMâncare: ${foodList}\n\nFeedback sincer:`}]})});
+      const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1000,system:`Ești coach de productivitate dur și sincer pentru un tânăr de 18 ani din Chișinău. Obiectiv: €100k vara asta prin vânzări B2B (AI lead triage pentru real estate). Program: Calisthenics Lu/Ma/Jo/Vi 07-10, Înot Mi/Sâ 07-11, Vioară Ma 16:30 și Jo 12:30, Climbing Mi 16:30 și Sâ 12:00, Biserică Du 08:30. Minimum 6h work/zi. Sistem: 10min staring at wall + 2h deep work repeat. Analizează ziua complet și oferă: 1) Evaluare sinceră (2 propoziții) 2) Ce a mers bine 3) Ce schimbi imediat 4) Recomandare pentru mâine. Fii direct, fără bullshit. Română. Max 150 cuvinte.`,messages:[{role:"user",content:`Activități:\n${actSummary||"niciuna"}\nSomn: ${sleepTotal}h\nApă: ${waterL}L\nMâncare: ${foodList}\n\nFeedback sincer:`}]})});
       const d=await res.json();
       if(d.error) setInsight("API error: "+d.error.message);
       else if(d.content&&d.content.length>0) setInsight(d.content.map(c=>c.text||"").join("").trim());
@@ -610,7 +610,7 @@ function CreateProfile({ onSave }) {
               <button key={a} onClick={()=>setAvatar(a)} style={{
                 width:48,height:48,borderRadius:12,fontSize:24,border:"none",cursor:"pointer",
                 background:avatar===a?"#C9A84C22":"#0d0d0d",
-                outline:avatar===a?"2px solid #C9A84C":"2px solid #000000",
+                outline:avatar===a?"2px solid #C9A84C":"2px solid transparent",
                 transition:"all .2s",
               }}>{a}</button>
             ))}
@@ -666,7 +666,7 @@ function ProfileView({ profile, onUpdate, data, onResetDay, onResetAll }) {
             <div style={{fontSize:11,color:"#444",letterSpacing:2,textTransform:"uppercase",marginBottom:10}}>Avatar</div>
             <div style={{display:"flex",flexWrap:"wrap",gap:8,marginBottom:20}}>
               {AVATARS.map(a=>(
-                <button key={a} onClick={()=>setAvatar(a)} style={{width:42,height:42,borderRadius:10,fontSize:21,border:"none",cursor:"pointer",background:avatar===a?"#3b82f622":"#111",outline:avatar===a?"2px solid #0070f3":"2px solid #000000",transition:"all .15s"}}>{a}</button>
+                <button key={a} onClick={()=>setAvatar(a)} style={{width:42,height:42,borderRadius:10,fontSize:21,border:"none",cursor:"pointer",background:avatar===a?"#3b82f622":"#111",outline:avatar===a?"2px solid #0070f3":"2px solid transparent",transition:"all .15s"}}>{a}</button>
               ))}
             </div>
             <div style={{marginBottom:16}}>
@@ -1039,7 +1039,7 @@ export default function App() {
       `}</style>
 
       {/* ── HEADER ── */}
-      <div style={{padding:"20px 16px 0",borderBottom:"1px solid #000000",paddingBottom:16,marginBottom:20}}>
+      <div style={{padding:"20px 20px 0",borderBottom:`1px solid ${"#1a1a1a"}`,paddingBottom:16,marginBottom:20}}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
           <span style={{fontSize:12,fontWeight:600,color:"#ededed",letterSpacing:"-0.02em"}}>Nick Productivity</span>
           <div style={{display:"flex",alignItems:"center",gap:10}}>
@@ -1051,14 +1051,14 @@ export default function App() {
         <div style={{fontSize:13,color:"#555",fontWeight:400}}>Hey {profile.name}</div>
       </div>
 
-      
+      <div style={{padding:"0 16px"}}>
 
       {/* ── MAIN TABS ── */}
-      <div style={{display:"flex",justifyContent:"center",marginBottom:24,borderBottom:"1px solid #000000",width:"100%",overflowX:"hidden"}>
+      <div style={{display:"flex",gap:0,marginBottom:24,borderBottom:`1px solid ${"#1a1a1a"}`,overflowX:"auto"}}>
         {TABS.map(t=>(
           <button key={t.id} onClick={()=>setTab(t.id)} style={{
             padding:"10px 14px",background:"transparent",border:"none",
-            borderBottom:tab===t.id?"2px solid #ededed":"2px solid #000000",
+            borderBottom:tab===t.id?`2px solid ${"#ededed"}`:"2px solid transparent",
             color:tab===t.id?"#ededed":"#555",fontWeight:tab===t.id?600:400,
             fontSize:13,cursor:"pointer",fontFamily:"inherit",whiteSpace:"nowrap",
             marginBottom:-1,letterSpacing:"-0.01em",transition:"color .15s",background:"transparent",
@@ -1067,7 +1067,7 @@ export default function App() {
       </div>
 
       {/* ── TODAY ── */}
-      {tab==="today"&&(<div style={{padding:"0 16px"}}>
+      {tab==="today"&&(
         <>
           {/* Stats 2x2 */}
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:22}}>
@@ -1137,15 +1137,16 @@ export default function App() {
           {subTab==="food"&&<div style={S.card}><div style={{...S.label,color:"#f59e0b"}}>Mâncare</div><FoodLog entries={todayData.food||[]} onAdd={addFood} onDelete={delFood} activities={acts}/></div>}
           {subTab==="sport"&&<div style={S.card}><div style={{...S.label,color:"#3b82f6"}}>Analiză sport AI</div><SportAnalysis activities={acts} sleep={todayData.sleep||[]} food={todayData.food||[]} sportNotes={todayData.sportNotes||[]} onAddNote={addSportNote} onDeleteNote={delSportNote}/></div>}
         </>
-      </div>)}
+      )}
 
-      {tab==="schedule"&&<div style={{padding:"0 16px"}}><div style={S.card}><div style={{...S.label}}>Program de referință</div><ScheduleView/></div></div>}
-      {tab==="stats"&&<div style={{padding:"0 16px"}}><StatsView data={data}/></div>}
-      {tab==="history"&&<div style={{padding:"0 16px"}}><HistoryView data={data}/></div>}
-      {tab==="profile"&&<div style={{padding:"0 16px"}}><ProfileView profile={profile} onUpdate={updateProfile} data={data} onResetDay={resetDay} onResetAll={resetAll}/></div>}
+      {tab==="schedule"&&<div style={S.card}><div style={{...S.label}}>Program de referință</div><ScheduleView/></div>}
+      {tab==="stats"&&<StatsView data={data}/>}
+      {tab==="history"&&<HistoryView data={data}/>}
+      {tab==="profile"&&<ProfileView profile={profile} onUpdate={updateProfile} data={data} onResetDay={resetDay} onResetAll={resetAll}/>}
+
+      </div>
 
       {showOnboarding&&<Onboarding name={profile?.name||""} onDone={()=>setShowOnboarding(false)}/>}
     </div>
   );
 }
-// Thu May 21 17:02:23 EEST 2026

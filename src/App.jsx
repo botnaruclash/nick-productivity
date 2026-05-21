@@ -1051,7 +1051,7 @@ export default function App() {
         <div style={{fontSize:13,color:"#555",fontWeight:400}}>Hey {profile.name}</div>
       </div>
 
-      <div style={{padding:"0 12px"}}>
+      <div style={{padding:"0 16px"}}>
 
       {/* ── MAIN TABS ── */}
       <div style={{display:"flex",gap:0,marginBottom:24,borderBottom:`1px solid ${"#1a1a1a"}`,overflowX:"auto"}}>

@@ -1139,10 +1139,10 @@ export default function App() {
         </>
       )}
 
-      {tab==="schedule"&&<div style={S.card}><div style={{...S.label}}>Program de referință</div><ScheduleView/></div>}
-      {tab==="stats"&&<StatsView data={data}/>}
-      {tab==="history"&&<HistoryView data={data}/>}
-      {tab==="profile"&&<ProfileView profile={profile} onUpdate={updateProfile} data={data} onResetDay={resetDay} onResetAll={resetAll}/>}
+      {tab==="schedule"&&<div style={{padding:"0 16px"}}><div style={S.card}><div style={{...S.label}}>Program de referință</div><ScheduleView/></div></div>}
+      {tab==="stats"&&<div style={{padding:"0 16px"}}><StatsView data={data}/></div>}
+      {tab==="history"&&<div style={{padding:"0 16px"}}><HistoryView data={data}/></div>}
+      {tab==="profile"&&<div style={{padding:"0 16px"}}><ProfileView profile={profile} onUpdate={updateProfile} data={data} onResetDay={resetDay} onResetAll={resetAll}/></div>}
 
       </div>
 

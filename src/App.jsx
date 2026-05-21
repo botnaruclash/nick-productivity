@@ -596,7 +596,7 @@ function CreateProfile({ onSave }) {
   return(
     <div style={{minHeight:"100vh",background:"#000",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"32px 24px",fontFamily:"'DM Sans','Helvetica Neue',sans-serif"}}>
       <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
-      <div style={{width:"100%",maxWidth:400}}>
+      <div style={{width:"100%",maxWidth:"100%"}}>
         <div style={{textAlign:"center",marginBottom:40}}>
           <div style={{fontSize:10,color:"#0070f3",letterSpacing:3,textTransform:"uppercase",marginBottom:12}}>Grind Log</div>
           <div style={{fontSize:28,fontWeight:700,color:"#ededed",marginBottom:8}}>Creează-ți profilul</div>

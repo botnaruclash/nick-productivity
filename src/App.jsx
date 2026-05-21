@@ -1041,7 +1041,7 @@ export default function App() {
       {/* ── HEADER ── */}
       <div style={{padding:"20px 20px 0",borderBottom:`1px solid ${"#1a1a1a"}`,paddingBottom:16,marginBottom:20}}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
-          <span style={{fontSize:12,fontWeight:600,color:"#ededed",letterSpacing:"-0.02em",textAlign:"center",width:"100%"}}>Nick Productivity</span>
+          <span style={{fontSize:12,fontWeight:600,color:"#ededed",letterSpacing:"-0.02em"}}>Nick Productivity</span>
           <div style={{display:"flex",alignItems:"center",gap:10}}>
             <span style={{fontSize:12,color:"#555",display:"flex",alignItems:"center",gap:3}}>{calcStreak(data)}<span style={{fontSize:14}}>🔥</span></span>
             <div style={{width:28,height:28,borderRadius:"50%",background:"#0a0a0a",border:`1px solid ${"#1a1a1a"}`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:16,cursor:"pointer"}} onClick={()=>setTab("profile")}>{profile.avatar}</div>

@@ -1057,7 +1057,7 @@ export default function App() {
       <div style={{display:"flex",gap:0,marginBottom:24,borderBottom:`1px solid ${"#000000"}`,justifyContent:"center",overflow:"hidden"}}>
         {TABS.map(t=>(
           <button key={t.id} onClick={()=>setTab(t.id)} style={{
-            padding:"10px 14px",background:"transparent",border:"none",
+            padding:"10px 0",background:"transparent",border:"none",flex:1,textAlign:"center",
             borderBottom:tab===t.id?`2px solid ${"#ededed"}`:"2px solid transparent",
             color:tab===t.id?"#ededed":"#555",fontWeight:tab===t.id?600:400,
             fontSize:13,cursor:"pointer",fontFamily:"inherit",whiteSpace:"nowrap",

@@ -205,7 +205,7 @@ function FoodLog({ entries, onAdd, onDelete, activities }) {
     const sportList = activities.filter(a=>["calisthenics","swimming","climbing"].includes(a.type))
       .map(a=>`${getType(a.type).label} ${fmtDur(a.duration)}${a.steps?" "+a.steps+" pasi":""}`).join(", ")||"niciun sport azi";
     try {
-      const res = await fetch("https://api.anthropic.com/v1/messages",{
+      const res = await fetch("/api/ai",{
         method:"POST",headers:{"Content-Type":"application/json"},
         body:JSON.stringify({
           model:"claude-sonnet-4-20250514",max_tokens:1000,
@@ -281,7 +281,7 @@ function SportAnalysis({ activities, sleep, food, sportNotes, onAddNote, onDelet
     const sleepTotal = sleep.reduce((s,e)=>s+e.hours,0);
     const foodList = food.map(f=>`${f.text} ${f.grams}g`).join(", ")||"nimic logat";
     try {
-      const res = await fetch("https://api.anthropic.com/v1/messages",{
+      const res = await fetch("/api/ai",{
         method:"POST",headers:{"Content-Type":"application/json"},
         body:JSON.stringify({
           model:"claude-sonnet-4-20250514",max_tokens:1000,
@@ -452,7 +452,7 @@ function AICoach({ dayData }) {
     const foodList=(dayData.food||[]).map(f=>`${f.text} ${f.grams}g`).join(", ")||"nimic";
     const waterL=((dayData.water||0)/1000).toFixed(2);
     try {
-      const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1000,system:`Ești coach de productivitate dur și sincer pentru un tânăr de 18 ani din Chișinău. Obiectiv: €100k vara asta prin vânzări B2B (AI lead triage pentru real estate). Program: Calisthenics Lu/Ma/Jo/Vi 07-10, Înot Mi/Sâ 07-11, Vioară Ma 16:30 și Jo 12:30, Climbing Mi 16:30 și Sâ 12:00, Biserică Du 08:30. Minimum 6h work/zi. Sistem: 10min staring at wall + 2h deep work repeat. Analizează ziua complet și oferă: 1) Evaluare sinceră (2 propoziții) 2) Ce a mers bine 3) Ce schimbi imediat 4) Recomandare pentru mâine. Fii direct, fără bullshit. Română. Max 150 cuvinte.`,messages:[{role:"user",content:`Activități:\n${actSummary||"niciuna"}\nSomn: ${sleepTotal}h\nApă: ${waterL}L\nMâncare: ${foodList}\n\nFeedback sincer:`}]})});
+      const res=await fetch("/api/ai",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1000,system:`Ești coach de productivitate dur și sincer pentru un tânăr de 18 ani din Chișinău. Obiectiv: €100k vara asta prin vânzări B2B (AI lead triage pentru real estate). Program: Calisthenics Lu/Ma/Jo/Vi 07-10, Înot Mi/Sâ 07-11, Vioară Ma 16:30 și Jo 12:30, Climbing Mi 16:30 și Sâ 12:00, Biserică Du 08:30. Minimum 6h work/zi. Sistem: 10min staring at wall + 2h deep work repeat. Analizează ziua complet și oferă: 1) Evaluare sinceră (2 propoziții) 2) Ce a mers bine 3) Ce schimbi imediat 4) Recomandare pentru mâine. Fii direct, fără bullshit. Română. Max 150 cuvinte.`,messages:[{role:"user",content:`Activități:\n${actSummary||"niciuna"}\nSomn: ${sleepTotal}h\nApă: ${waterL}L\nMâncare: ${foodList}\n\nFeedback sincer:`}]})});
       const d=await res.json();
       if(d.error) setInsight("API error: "+d.error.message);
       else if(d.content&&d.content.length>0) setInsight(d.content.map(c=>c.text||"").join("").trim());

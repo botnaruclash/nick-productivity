@@ -463,7 +463,7 @@ function AICoach({ dayData }) {
 
   return (
     <div style={S.card}>
-      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:insight?16:0}}>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:insight?16:0,gap:12}}>
         <div>
           <div style={{fontSize:11,color:"#C9A84C",letterSpacing:2,textTransform:"uppercase"}}>AI Coach</div>
           <div style={{fontSize:13,color:"#555",marginTop:2}}>Feedback complet al zilei</div>

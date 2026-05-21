@@ -1039,7 +1039,7 @@ export default function App() {
       `}</style>
 
       {/* ── HEADER ── */}
-      <div style={{padding:"20px 16px 0",borderBottom:`1px solid ${"#1a1a1a"}`,paddingBottom:16,marginBottom:20}}>
+      <div style={{padding:"20px 16px 0",borderBottom:"1px solid #000000",paddingBottom:16,marginBottom:20}}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
           <span style={{fontSize:12,fontWeight:600,color:"#ededed",letterSpacing:"-0.02em"}}>Nick Productivity</span>
           <div style={{display:"flex",alignItems:"center",gap:10}}>
@@ -1054,7 +1054,7 @@ export default function App() {
       
 
       {/* ── MAIN TABS ── */}
-      <div style={{display:"flex",justifyContent:"center",marginBottom:24,borderBottom:"1px solid #000",width:"100%",overflowX:"hidden"}>
+      <div style={{display:"flex",justifyContent:"center",marginBottom:24,borderBottom:"1px solid #000000",width:"100%",overflowX:"hidden"}>
         {TABS.map(t=>(
           <button key={t.id} onClick={()=>setTab(t.id)} style={{
             padding:"10px 14px",background:"transparent",border:"none",

@@ -610,7 +610,7 @@ function CreateProfile({ onSave }) {
               <button key={a} onClick={()=>setAvatar(a)} style={{
                 width:48,height:48,borderRadius:12,fontSize:24,border:"none",cursor:"pointer",
                 background:avatar===a?"#C9A84C22":"#0d0d0d",
-                outline:avatar===a?"2px solid #C9A84C":"2px solid transparent",
+                outline:avatar===a?"2px solid #C9A84C":"2px solid #000000",
                 transition:"all .2s",
               }}>{a}</button>
             ))}
@@ -666,7 +666,7 @@ function ProfileView({ profile, onUpdate, data, onResetDay, onResetAll }) {
             <div style={{fontSize:11,color:"#444",letterSpacing:2,textTransform:"uppercase",marginBottom:10}}>Avatar</div>
             <div style={{display:"flex",flexWrap:"wrap",gap:8,marginBottom:20}}>
               {AVATARS.map(a=>(
-                <button key={a} onClick={()=>setAvatar(a)} style={{width:42,height:42,borderRadius:10,fontSize:21,border:"none",cursor:"pointer",background:avatar===a?"#3b82f622":"#111",outline:avatar===a?"2px solid #0070f3":"2px solid transparent",transition:"all .15s"}}>{a}</button>
+                <button key={a} onClick={()=>setAvatar(a)} style={{width:42,height:42,borderRadius:10,fontSize:21,border:"none",cursor:"pointer",background:avatar===a?"#3b82f622":"#111",outline:avatar===a?"2px solid #0070f3":"2px solid #000000",transition:"all .15s"}}>{a}</button>
               ))}
             </div>
             <div style={{marginBottom:16}}>
@@ -1058,7 +1058,7 @@ export default function App() {
         {TABS.map(t=>(
           <button key={t.id} onClick={()=>setTab(t.id)} style={{
             padding:"10px 14px",background:"transparent",border:"none",
-            borderBottom:tab===t.id?`2px solid ${"#ededed"}`:"2px solid transparent",
+            borderBottom:tab===t.id?`2px solid ${"#ededed"}`:"2px solid #000000",
             color:tab===t.id?"#ededed":"#555",fontWeight:tab===t.id?600:400,
             fontSize:13,cursor:"pointer",fontFamily:"inherit",whiteSpace:"nowrap",
             marginBottom:-1,letterSpacing:"-0.01em",transition:"color .15s",background:"transparent",

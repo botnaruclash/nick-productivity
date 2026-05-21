@@ -1028,7 +1028,7 @@ export default function App() {
   const SUB_TABS=[{id:"activities",label:"Activități"},{id:"sleep",label:"Somn"},{id:"water",label:"Apă"},{id:"food",label:"Mâncare"},{id:"sport",label:"Sport AI"}];
 
   return(
-    <div style={{minHeight:"100vh",background:"#000000",color:"#ededed",fontFamily:"Inter,-apple-system,sans-serif",maxWidth:"100%",margin:"0 auto",padding:"0 0 90px",transform:"scale(1.03)",transformOrigin:"top center"}}>
+    <div style={{minHeight:"100vh",background:"#000000",color:"#ededed",fontFamily:"Inter,-apple-system,sans-serif",maxWidth:"100%",margin:0,padding:"0 0 90px"}}>
       <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
       <style>{`
         * { -webkit-font-smoothing: antialiased; box-sizing: border-box; }

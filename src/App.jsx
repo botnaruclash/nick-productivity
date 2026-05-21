@@ -596,7 +596,7 @@ function CreateProfile({ onSave }) {
   return(
     <div style={{minHeight:"100vh",background:"#000",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"32px 24px",fontFamily:"'DM Sans','Helvetica Neue',sans-serif"}}>
       <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
-      <div style={{width:"100%",maxWidth:"100%"}}>
+      <div style={{width:"100%",maxWidth:400}}>
         <div style={{textAlign:"center",marginBottom:40}}>
           <div style={{fontSize:10,color:"#0070f3",letterSpacing:3,textTransform:"uppercase",marginBottom:12}}>Grind Log</div>
           <div style={{fontSize:28,fontWeight:700,color:"#ededed",marginBottom:8}}>Creează-ți profilul</div>
@@ -1028,7 +1028,7 @@ export default function App() {
   const SUB_TABS=[{id:"activities",label:"Activități"},{id:"sleep",label:"Somn"},{id:"water",label:"Apă"},{id:"food",label:"Mâncare"},{id:"sport",label:"Sport AI"}];
 
   return(
-    <div style={{minHeight:"100vh",background:"#000000",color:"#ededed",fontFamily:"Inter,-apple-system,sans-serif",maxWidth:"100%",margin:"0 auto",padding:"0 0 90px",overflowX:"hidden"}}>
+    <div style={{minHeight:"100vh",background:"#000000",color:"#ededed",fontFamily:"Inter,-apple-system,sans-serif",maxWidth:"100%",margin:0,padding:"0 0 90px"}}>
       <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
       <style>{`
         * { -webkit-font-smoothing: antialiased; box-sizing: border-box; }
@@ -1139,19 +1139,11 @@ export default function App() {
         </>
       )}
 
-      {{...S.label}}>Program de referință</div><ScheduleView/></div>}
-      />}
-      />}
-       onUpdate={updateProfile} data={data} onResetDay={resetDay} onResetAll={resetAll}/>}
-
-      {{...S.label}}>Program de referință</div><ScheduleView/></div>}
-      />}
-      />}
-       onUpdate={updateProfile} data={data} onResetDay={resetDay} onResetAll={resetAll}/>}
-      {tab==="schedule"&&<div style={S.card}><div style={{...S.label}}>Program</div><ScheduleView/></div>}
+      {tab==="schedule"&&<div style={S.card}><div style={{...S.label}}>Program de referință</div><ScheduleView/></div>}
       {tab==="stats"&&<StatsView data={data}/>}
       {tab==="history"&&<HistoryView data={data}/>}
       {tab==="profile"&&<ProfileView profile={profile} onUpdate={updateProfile} data={data} onResetDay={resetDay} onResetAll={resetAll}/>}
+
       </div>
 
       {showOnboarding&&<Onboarding name={profile?.name||""} onDone={()=>setShowOnboarding(false)}/>}

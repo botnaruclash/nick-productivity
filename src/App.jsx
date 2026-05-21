@@ -808,7 +808,7 @@ function ScheduleView() {
               marginLeft:isActive?"-10px":0,paddingLeft:isActive?"10px":0}}>
               <div style={{position:"absolute",left:isActive?-14:-20,top:isActive?16:6,
                 width:isActive?14:8,height:isActive?14:8,borderRadius:"50%",
-                background:isActive?"#3b82f6":"#444",
+                background:isActive?"#3b82f6":"#ededed",
                 border:`2px solid ${isActive?"#0070f3":b.fixed?"#00000066":"#d4d4d4"}`,
                 boxShadow:isActive?"0 0 10px #C9A84C88":"none",zIndex:1}}/>
               <div style={{minWidth:90,fontSize:12,paddingTop:2,fontVariantNumeric:"tabular-nums",

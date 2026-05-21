@@ -1054,7 +1054,7 @@ export default function App() {
       
 
       {/* ── MAIN TABS ── */}
-      <div style={{display:"flex",justifyContent:"center",marginBottom:24,borderBottom:"1px solid #1a1a1a",width:"100%",overflowX:"hidden"}>
+      <div style={{display:"flex",justifyContent:"center",marginBottom:24,borderBottom:"1px solid #000",width:"100%",overflowX:"hidden"}>
         {TABS.map(t=>(
           <button key={t.id} onClick={()=>setTab(t.id)} style={{
             padding:"10px 14px",background:"transparent",border:"none",

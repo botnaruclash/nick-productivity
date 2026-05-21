@@ -1039,7 +1039,7 @@ export default function App() {
       `}</style>
 
       {/* ── HEADER ── */}
-      <div style={{padding:"20px 20px 0",borderBottom:`1px solid ${"#1a1a1a"}`,paddingBottom:16,marginBottom:20}}>
+      <div style={{padding:"20px 16px 0",borderBottom:`1px solid ${"#1a1a1a"}`,paddingBottom:16,marginBottom:20}}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
           <span style={{fontSize:12,fontWeight:600,color:"#ededed",letterSpacing:"-0.02em"}}>Nick Productivity</span>
           <div style={{display:"flex",alignItems:"center",gap:10}}>
@@ -1067,7 +1067,7 @@ export default function App() {
       </div>
 
       {/* ── TODAY ── */}
-      {tab==="today"&&(
+      {tab==="today"&&(<div style={{padding:"0 16px"}}>
         <>
           {/* Stats 2x2 */}
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:22}}>
@@ -1137,12 +1137,12 @@ export default function App() {
           {subTab==="food"&&<div style={S.card}><div style={{...S.label,color:"#f59e0b"}}>Mâncare</div><FoodLog entries={todayData.food||[]} onAdd={addFood} onDelete={delFood} activities={acts}/></div>}
           {subTab==="sport"&&<div style={S.card}><div style={{...S.label,color:"#3b82f6"}}>Analiză sport AI</div><SportAnalysis activities={acts} sleep={todayData.sleep||[]} food={todayData.food||[]} sportNotes={todayData.sportNotes||[]} onAddNote={addSportNote} onDeleteNote={delSportNote}/></div>}
         </>
-      )}
+      </div>)}
 
-      {tab==="schedule"&&<div style={S.card}><div style={{...S.label}}>Program de referință</div><ScheduleView/></div>}
-      {tab==="stats"&&<StatsView data={data}/>}
-      {tab==="history"&&<HistoryView data={data}/>}
-      {tab==="profile"&&<ProfileView profile={profile} onUpdate={updateProfile} data={data} onResetDay={resetDay} onResetAll={resetAll}/>}
+      {tab==="schedule"&&<div style={{padding:"0 16px"}}><div style={S.card}><div style={{...S.label}}>Program de referință</div><ScheduleView/></div></div>}
+      {tab==="stats"&&<div style={{padding:"0 16px"}}><StatsView data={data}/></div>}
+      {tab==="history"&&<div style={{padding:"0 16px"}}><HistoryView data={data}/></div>}
+      {tab==="profile"&&<div style={{padding:"0 16px"}}><ProfileView profile={profile} onUpdate={updateProfile} data={data} onResetDay={resetDay} onResetAll={resetAll}/></div>}
 
       {showOnboarding&&<Onboarding name={profile?.name||""} onDone={()=>setShowOnboarding(false)}/>}
     </div>

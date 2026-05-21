@@ -532,7 +532,7 @@ function Onboarding({ name, onDone }) {
   return (
     <div style={{
       position:"fixed", inset:0, background:"#000", zIndex:9999,
-      display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"space-evenly",
+      display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center",
       opacity: screenOpacity, transition:"opacity 0.6s ease",
       fontFamily:"'DM Sans', -apple-system, 'SF Pro Display', sans-serif",
     }}>
@@ -594,7 +594,7 @@ function CreateProfile({ onSave }) {
   const [goal,setGoal]=useState("100000");
 
   return(
-    <div style={{minHeight:"100vh",background:"#000",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"space-evenly",padding:"32px 24px",fontFamily:"'DM Sans','Helvetica Neue',sans-serif"}}>
+    <div style={{minHeight:"100vh",background:"#000",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"32px 24px",fontFamily:"'DM Sans','Helvetica Neue',sans-serif"}}>
       <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
       <div style={{width:"100%",maxWidth:400}}>
         <div style={{textAlign:"center",marginBottom:40}}>
@@ -723,7 +723,7 @@ function ProfileView({ profile, onUpdate, data, onResetDay, onResetAll }) {
             );
           })}
         </div>
-        <div style={{display:"flex",gap:12,marginTop:12,justifyContent:"space-evenly"}}>
+        <div style={{display:"flex",gap:12,marginTop:12,justifyContent:"center"}}>
           <div style={{display:"flex",alignItems:"center",gap:5,fontSize:10,color:"#444"}}><div style={{width:8,height:8,borderRadius:2,background:"#C9A84C"}}/> 6h+ work</div>
           <div style={{display:"flex",alignItems:"center",gap:5,fontSize:10,color:"#444"}}><div style={{width:8,height:8,borderRadius:2,background:"#C9A84C55"}}/> activ</div>
         </div>
@@ -864,7 +864,7 @@ function CalendarView({ data }) {
           if(!d) return <div key={i}/>;
           const isToday=getDayKey(d)===todayStr,score=getScore(d);
           return(
-            <div key={i} style={{aspectRatio:"1",display:"flex",alignItems:"center",justifyContent:"space-evenly",borderRadius:8,fontSize:13,fontWeight:isToday?700:400,border:isToday?"1px solid #C9A84C":"1px solid transparent",background:score?`${SC[score]}22`:"#0d0d0d",color:isToday?"#C9A84C":score?SC[score]:"#444",position:"relative"}}>
+            <div key={i} style={{aspectRatio:"1",display:"flex",alignItems:"center",justifyContent:"center",borderRadius:8,fontSize:13,fontWeight:isToday?700:400,border:isToday?"1px solid #C9A84C":"1px solid transparent",background:score?`${SC[score]}22`:"#0d0d0d",color:isToday?"#C9A84C":score?SC[score]:"#444",position:"relative"}}>
               {d}
               {score&&<div style={{position:"absolute",bottom:3,left:"50%",transform:"translateX(-50%)",width:4,height:4,borderRadius:"50%",background:SC[score]}}/>}
             </div>
@@ -1044,7 +1044,7 @@ export default function App() {
           <span style={{fontSize:12,fontWeight:600,color:"#ededed",letterSpacing:"-0.02em"}}>Nick Productivity</span>
           <div style={{display:"flex",alignItems:"center",gap:10}}>
             <span style={{fontSize:12,color:"#555",display:"flex",alignItems:"center",gap:3}}>{calcStreak(data)}<span style={{fontSize:14}}>🔥</span></span>
-            <div style={{width:28,height:28,borderRadius:"50%",background:"#0a0a0a",border:`1px solid ${"#1a1a1a"}`,display:"flex",alignItems:"center",justifyContent:"space-evenly",fontSize:16,cursor:"pointer"}} onClick={()=>setTab("profile")}>{profile.avatar}</div>
+            <div style={{width:28,height:28,borderRadius:"50%",background:"#0a0a0a",border:`1px solid ${"#1a1a1a"}`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:16,cursor:"pointer"}} onClick={()=>setTab("profile")}>{profile.avatar}</div>
           </div>
         </div>
         <div style={{fontSize:22,fontWeight:700,letterSpacing:"-0.04em",color:"#ededed",marginBottom:4,textTransform:"capitalize"}}>{todayLabel}</div>

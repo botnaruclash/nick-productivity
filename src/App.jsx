@@ -1028,7 +1028,7 @@ export default function App() {
   const SUB_TABS=[{id:"activities",label:"Activități"},{id:"sleep",label:"Somn"},{id:"water",label:"Apă"},{id:"food",label:"Mâncare"},{id:"sport",label:"Sport AI"}];
 
   return(
-    <div style={{minHeight:"100vh",background:"#000000",color:"#ededed",fontFamily:"Inter,-apple-system,sans-serif",maxWidth:480,margin:"0 auto",padding:"0 0 90px",overflowX:"hidden"}}>
+    <div style={{minHeight:"100vh",background:"#000000",color:"#ededed",fontFamily:"Inter,-apple-system,sans-serif",maxWidth:"100%",margin:"0 auto",padding:"0 0 90px",overflowX:"hidden"}}>
       <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
       <style>{`
         * { -webkit-font-smoothing: antialiased; box-sizing: border-box; }
@@ -1051,7 +1051,7 @@ export default function App() {
         <div style={{fontSize:13,color:"#555",fontWeight:400}}>Hey {profile.name}</div>
       </div>
 
-      <div style={{padding:"0 20px"}}>
+      <div style={{padding:"0 12px"}}>
 
       {/* ── MAIN TABS ── */}
       <div style={{display:"flex",gap:0,marginBottom:24,borderBottom:`1px solid ${"#1a1a1a"}`,overflowX:"auto"}}>

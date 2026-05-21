@@ -1101,7 +1101,7 @@ export default function App() {
           <div style={{display:"flex",gap:6,marginBottom:20,overflowX:"auto",paddingBottom:2}}>
             {SUB_TABS.map(t=>(
               <button key={t.id} onClick={()=>setSubTab(t.id)} style={{
-                padding:"7px 16px",borderRadius:8,fontFamily:"inherit",fontSize:12,cursor:"pointer",
+                padding:"6px 10px",borderRadius:8,fontFamily:"inherit",fontSize:11,cursor:"pointer",
                 border:`1px solid ${subTab===t.id?"#ededed":"#1a1a1a"}`,
                 background:subTab===t.id?"#ededed":"transparent",
                 color:subTab===t.id?"#000":"#555",

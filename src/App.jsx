@@ -1051,7 +1051,7 @@ export default function App() {
         <div style={{fontSize:13,color:"#555",fontWeight:400}}>Hey {profile.name}</div>
       </div>
 
-      <div style={{padding:"0 16px"}}>
+      
 
       {/* ── MAIN TABS ── */}
       <div style={{display:"flex",gap:0,marginBottom:24,borderBottom:`1px solid ${"#1a1a1a"}`,overflowX:"auto"}}>
@@ -1143,8 +1143,6 @@ export default function App() {
       {tab==="stats"&&<StatsView data={data}/>}
       {tab==="history"&&<HistoryView data={data}/>}
       {tab==="profile"&&<ProfileView profile={profile} onUpdate={updateProfile} data={data} onResetDay={resetDay} onResetAll={resetAll}/>}
-
-      </div>
 
       {showOnboarding&&<Onboarding name={profile?.name||""} onDone={()=>setShowOnboarding(false)}/>}
     </div>

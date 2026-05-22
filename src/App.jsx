@@ -908,7 +908,7 @@ function StatsView({ data }) {
     {key:"work",label:"Work",color:"#C9A84C",unit:"h",desc:"Ore de work pe zi"},
     {key:"sleep",label:"Somn",color:"#5A6EBF",unit:"h",desc:"Ore de somn pe zi"},
     {key:"water",label:"Apă",color:"#3A9BE0",unit:"L",desc:"Litri de apă pe zi"},
-    {key:"sport",label:"Efort fizic",color:"#6DBE6D",unit:"/10",desc:"Scor efort fizic (1-10)"},
+    
   ];
 
   return (

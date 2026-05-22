@@ -440,94 +440,143 @@ function ActivityCard({ activity, onDelete }) {
 }
 
 // ─── AI COACH ─────────────────────────────────────────────────────────────────
-function AICoach({ dayData }) {
-  const [messages, setMessages] = useState([]);
+function AICoach({ dayData, messages, setMessages }) {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
+  const [fullscreen, setFullscreen] = useState(false);
   const acts = dayData.activities||[];
+  const messagesRef = useState(null)[0];
 
   const buildContext = () => {
-    const actSummary = acts.map(a=>getType(a.type).label+": "+fmtDur(a.duration)+", rating "+a.rating+"/5"+(a.steps?", "+a.steps+" pasi":"")+(a.comment?", \""+a.comment+"\"":"")).join("\n")||"niciuna";
+    const actSummary = acts.map(a=>getType(a.type).label+": "+fmtDur(a.duration)+", rating "+a.rating+"/5"+(a.steps?", "+a.steps+" pasi":"")+(a.comment?", \""+a.comment+"\"":"")).join("\n")||"nicio activitate logata";
     const sleepTotal = (dayData.sleep||[]).reduce((s,e)=>s+e.hours,0);
     const foodList = (dayData.food||[]).map(f=>f.text+" "+f.grams+"g").join(", ")||"nimic";
     const waterL = ((dayData.water||0)/1000).toFixed(2);
-    return "DATE AZI:\nActivitati:\n"+actSummary+"\nSomn: "+sleepTotal+"h\nApa: "+waterL+"L\nMancare: "+foodList;
+    const hour = new Date().getHours();
+    return "Ora actuala: "+hour+":00\nActivitati azi:\n"+actSummary+"\nSomn: "+sleepTotal+"h\nApa: "+waterL+"L\nMancare: "+foodList;
   };
 
-  const SYSTEM = "Esti AI Coach personal pentru Nick, 18 ani, Chisinau. Obiectiv: 100k euro vara asta prin vanzari B2B. Program fix: Calisthenics Lu/Ma/Jo/Vi 07-10, Inot Mi/Sa 07-11, Vioara Ma 16:30 si Jo 12:30, Climbing Mi 16:30 si Sa 12:00, Biserica Du 08:30. Target: 6h work/zi. Fii direct, sincer, scurt. Romana.";
+  const SYSTEM = `Esti coach-ul personal al lui Nick, 18 ani din Chisinau. Obiectivul lui e sa castige 100.000 euro vara asta prin vanzari B2B cu un sistem AI de triage pentru agentii imobiliare. Program zilnic: Calisthenics Lu/Ma/Jo/Vi 07-10, Inot Mi/Sa 07-11, Vioara Ma 16:30 si Jo 12:30, Climbing Mi 16:30 si Sa 12:00, Biserica Du 08:30. Target zilnic: 6h work minim.
+
+Stilul tau de comunicare:
+- Vorbesti ca un mentor cald care il cunoaste bine pe Nick
+- Recunosti si apreciezi sincer ce a facut bine
+- Ii spui direct ce mai are de facut, fara sa fii aspru
+- Niciodata nu folosesti bold, asteriscuri, liniute sau bullet points
+- Scrii natural, ca un mesaj de la un prieten mai in varsta
+- Fiecare idee pe rand nou, cu un rand gol intre ele
+- Scurt si la obiect, maxim 4-5 randuri
+- Romana`;
 
   const sendMessage = async (userMsg) => {
-    const newMessages = [...messages, {role:"user", content:userMsg}];
+    const isFirst = messages.length === 0;
+    const userContent = isFirst ? buildContext()+"\n\nUite cum a mers ziua mea pana acum. Ce zici?" : userMsg;
+    const newMessages = [...messages, {role:"user", content:userContent, display:isFirst?"auto":userMsg}];
     setMessages(newMessages);
     setInput("");
     setLoading(true);
     try {
-      let apiMessages = newMessages;
-      if(messages.length === 0) {
-        apiMessages = [{role:"user", content:buildContext()+"\n\nAnalizeaza ziua mea pana acum si spune-mi sincer cum stau."}, {role:"user", content:userMsg}];
-        apiMessages = [{role:"user", content:buildContext()+"\n\nAnalizeaza ziua mea pana acum."}];
-      }
+      const apiMsgs = newMessages.map(m=>({role:m.role, content:m.content}));
       const res = await fetch("/api/ai", {
         method:"POST", mode:"cors",
         headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({model:"claude-sonnet-4-5", max_tokens:400, system:SYSTEM, messages:newMessages.length===1?[{role:"user",content:buildContext()+"\n\nAnalizeaza ziua mea pana acum si spune-mi cum stau."}]:newMessages})
+        body:JSON.stringify({model:"claude-sonnet-4-5", max_tokens:300, system:SYSTEM, messages:apiMsgs})
       });
       const d = await res.json();
-      const reply = d.error ? "Eroare: "+d.error.message : (d.content&&d.content.length>0 ? d.content.map(c=>c.text||"").join("").trim() : "Eroare API.");
-      setMessages([...newMessages, {role:"assistant", content:reply}]);
+      const reply = d.error ? "A aparut o eroare. Incearca din nou." : (d.content&&d.content.length>0 ? d.content.map(c=>c.text||"").join("").trim() : "Eroare API.");
+      setMessages([...newMessages, {role:"assistant", content:reply, display:reply}]);
     } catch(e) {
-      setMessages([...newMessages, {role:"assistant", content:"Eroare retea: "+e.message}]);
+      setMessages([...newMessages, {role:"assistant", content:"Eroare retea: "+e.message, display:"Eroare retea: "+e.message}]);
     }
     setLoading(false);
   };
 
   const startChat = () => {
     setOpen(true);
+    setFullscreen(true);
     if(messages.length === 0) sendMessage("start");
+  };
+
+  const chatStyle = fullscreen ? {
+    position:"fixed", inset:0, zIndex:1000,
+    background:"#000",
+    display:"flex", flexDirection:"column",
+    animation:"zoomIn .25s ease",
+  } : {
+    ...S.card, padding:0, overflow:"hidden",
   };
 
   if(!open) return (
     <div style={S.card}>
+      <style>{`@keyframes zoomIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}`}</style>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
         <div>
           <div style={{fontSize:11,color:"#C9A84C",letterSpacing:2,textTransform:"uppercase"}}>AI Coach</div>
-          <div style={{fontSize:13,color:"#555",marginTop:2}}>Feedback complet al zilei</div>
+          <div style={{fontSize:13,color:"#555",marginTop:2}}>{messages.length>0?"Conversatie activa":"Feedback al zilei"}</div>
         </div>
-        <button onClick={startChat} style={{...S.btn(),fontSize:12,padding:"9px 15px"}}>Analizeaza</button>
+        <button onClick={startChat} style={{...S.btn(),fontSize:12,padding:"9px 15px"}}>
+          {messages.length>0?"Continua":"Analizeaza"}
+        </button>
       </div>
     </div>
   );
 
   return (
-    <div style={{...S.card,padding:0,overflow:"hidden"}}>
-      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"14px 18px",borderBottom:"1px solid #1a1a1a"}}>
-        <div style={{fontSize:11,color:"#C9A84C",letterSpacing:2,textTransform:"uppercase"}}>AI Coach</div>
-        <button onClick={()=>setOpen(false)} style={{background:"none",border:"none",color:"#555",cursor:"pointer",fontSize:20,padding:"2px 8px"}}>x</button>
-      </div>
-      <div style={{height:300,overflowY:"auto",padding:"16px 18px",display:"flex",flexDirection:"column",gap:12}}>
-        {messages.filter(m=>m.content!=="start").map((m,i)=>(
-          <div key={i} style={{display:"flex",justifyContent:m.role==="user"?"flex-end":"flex-start"}}>
-            <div style={{maxWidth:"85%",padding:"10px 14px",
-              borderRadius:m.role==="user"?"14px 14px 4px 14px":"14px 14px 14px 4px",
-              background:m.role==="user"?"#ededed":"#111",
-              color:m.role==="user"?"#000":"#ededed",
-              fontSize:13,lineHeight:1.6}}>
-              {m.content}
-            </div>
+    <>
+      <style>{`@keyframes zoomIn{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}`}</style>
+      <div style={chatStyle}>
+        {/* Header */}
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",
+          padding:fullscreen?"20px 20px 16px":"14px 18px",
+          borderBottom:"1px solid #1a1a1a",flexShrink:0}}>
+          <div style={{fontSize:11,color:"#C9A84C",letterSpacing:2,textTransform:"uppercase"}}>AI Coach</div>
+          <div style={{display:"flex",gap:8}}>
+            {fullscreen&&<button onClick={()=>setFullscreen(false)} style={{background:"none",border:"1px solid #1a1a1a",borderRadius:6,color:"#555",cursor:"pointer",fontSize:16,padding:"4px 10px",lineHeight:1}}>−</button>}
+            {!fullscreen&&<button onClick={()=>setFullscreen(true)} style={{background:"none",border:"1px solid #1a1a1a",borderRadius:6,color:"#555",cursor:"pointer",fontSize:14,padding:"4px 10px"}}>⛶</button>}
+            <button onClick={()=>{setOpen(false);setFullscreen(false);}} style={{background:"none",border:"1px solid #1a1a1a",borderRadius:6,color:"#555",cursor:"pointer",fontSize:16,padding:"4px 10px",lineHeight:1}}>×</button>
           </div>
-        ))}
-        {loading&&<div style={{display:"flex",justifyContent:"flex-start"}}><div style={{padding:"10px 14px",borderRadius:"14px 14px 14px 4px",background:"#111",color:"#555",fontSize:18}}>···</div></div>}
+        </div>
+
+        {/* Messages */}
+        <div style={{flex:1,overflowY:"auto",padding:"20px",display:"flex",flexDirection:"column",gap:16}}>
+          {messages.filter(m=>m.display&&m.display!=="auto"&&m.role==="assistant").length===0&&loading&&(
+            <div style={{display:"flex",justifyContent:"flex-start"}}>
+              <div style={{padding:"12px 16px",borderRadius:"16px 16px 16px 4px",background:"#111",color:"#555",fontSize:20}}>···</div>
+            </div>
+          )}
+          {messages.map((m,i)=>{
+            if(!m.display||m.display==="auto") return null;
+            return(
+              <div key={i} style={{display:"flex",justifyContent:m.role==="user"?"flex-end":"flex-start"}}>
+                <div style={{
+                  maxWidth:"82%",padding:"12px 16px",
+                  borderRadius:m.role==="user"?"18px 18px 4px 18px":"18px 18px 18px 4px",
+                  background:m.role==="user"?"#ededed":"#111",
+                  color:m.role==="user"?"#000":"#ededed",
+                  fontSize:14,lineHeight:1.7,whiteSpace:"pre-wrap",
+                }}>{m.display}</div>
+              </div>
+            );
+          })}
+          {loading&&messages.length>0&&(
+            <div style={{display:"flex",justifyContent:"flex-start"}}>
+              <div style={{padding:"12px 16px",borderRadius:"16px 16px 16px 4px",background:"#111",color:"#555",fontSize:20}}>···</div>
+            </div>
+          )}
+        </div>
+
+        {/* Input */}
+        <div style={{display:"flex",gap:8,padding:fullscreen?"16px 20px 32px":"12px 18px",borderTop:"1px solid #1a1a1a",flexShrink:0}}>
+          <input value={input} onChange={e=>setInput(e.target.value)}
+            onKeyDown={e=>{if(e.key==="Enter"&&input.trim()&&!loading) sendMessage(input.trim());}}
+            placeholder="Scrie un mesaj..." style={{...S.input,flex:1,fontSize:14}} disabled={loading}/>
+          <button onClick={()=>{if(input.trim()&&!loading) sendMessage(input.trim());}}
+            disabled={loading||!input.trim()}
+            style={{...S.btn(),padding:"10px 18px",fontSize:16,opacity:(loading||!input.trim())?.4:1}}>→</button>
+        </div>
       </div>
-      <div style={{display:"flex",gap:8,padding:"12px 18px",borderTop:"1px solid #1a1a1a"}}>
-        <input value={input} onChange={e=>setInput(e.target.value)}
-          onKeyDown={e=>{if(e.key==="Enter"&&input.trim()&&!loading) sendMessage(input.trim());}}
-          placeholder="Scrie un mesaj..." style={{...S.input,flex:1,fontSize:13}} disabled={loading}/>
-        <button onClick={()=>{if(input.trim()&&!loading) sendMessage(input.trim());}}
-          disabled={loading||!input.trim()}
-          style={{...S.btn(),padding:"10px 16px",fontSize:13,opacity:(loading||!input.trim())?.5:1}}>→</button>
-      </div>
-    </div>
+    </>
   );
 }
 
@@ -1044,6 +1093,7 @@ export default function App() {
   const [tab,setTab]=useState("today");
   const [subTab,setSubTab]=useState("activities");
   const [showForm,setShowForm]=useState(false);
+  const [coachMessages,setCoachMessages]=useState([]);
 
   // Show create profile screen if no profile
   if(!profile) return <CreateProfile onSave={(p)=>{saveProfile(p);setProfile(p);}}/>;
@@ -1185,7 +1235,7 @@ export default function App() {
                   Nicio activitate logată.
                 </div>
               )}
-              <div style={{marginTop:12}}><AICoach dayData={todayData}/></div>
+              <div style={{marginTop:12}}><AICoach dayData={todayData} messages={coachMessages} setMessages={setCoachMessages}/></div>
             </>
           )}
           {subTab==="sleep"&&<div style={S.card}><div style={{...S.label,color:"#3b82f6"}}>Somn</div><SleepTracker entries={todayData.sleep||[]} onAdd={addSleep} onDelete={delSleep}/></div>}

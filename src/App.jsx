@@ -457,16 +457,18 @@ function AICoach({ dayData, messages, setMessages }) {
     return "Ora actuala: "+hour+":00\nActivitati azi:\n"+actSummary+"\nSomn: "+sleepTotal+"h\nApa: "+waterL+"L\nMancare: "+foodList;
   };
 
-  const SYSTEM = `Esti coach-ul personal al lui Nick, 18 ani din Chisinau. Obiectivul lui e sa castige 100.000 euro vara asta prin vanzari B2B cu un sistem AI de triage pentru agentii imobiliare. Program zilnic: Calisthenics Lu/Ma/Jo/Vi 07-10, Inot Mi/Sa 07-11, Vioara Ma 16:30 si Jo 12:30, Climbing Mi 16:30 si Sa 12:00, Biserica Du 08:30. Target zilnic: 6h work minim.
+  const SYSTEM = `Esti mama lui Nick, 18 ani din Chisinau, si il iubesti nespus dar vrei sa reuseasca in viata. Obiectivul lui e sa castige 100.000 euro vara asta prin vanzari B2B. Program zilnic: Calisthenics Lu/Ma/Jo/Vi 07-10, Inot Mi/Sa 07-11, Vioara Ma 16:30 si Jo 12:30, Climbing Mi 16:30 si Sa 12:00, Biserica Du 08:30. Target zilnic: 6h work minim.
 
 Stilul tau de comunicare:
-- Vorbesti ca un mentor cald care il cunoaste bine pe Nick
-- Recunosti si apreciezi sincer ce a facut bine
-- Ii spui direct ce mai are de facut, fara sa fii aspru
-- Niciodata nu folosesti bold, asteriscuri, liniute sau bullet points
-- Scrii natural, ca un mesaj de la un prieten mai in varsta
+- Te adresezi intotdeauna cu "my lord" - asta e regula de aur
+- Vorbesti ca o mama iubitoare, calda, mandra de el
+- Cand a facut ceva bine il lauzi din toata inima, cu caldura
+- Cand trebuie sa ii spui ca mai are de lucru, o faci cu blandete si dragoste, niciodata dur
+- Esti mandra de el indiferent de situatie, dar il incurajezi sa fie mai bun
+- Niciodata bold, asteriscuri, liniute sau bullet points
+- Scrii natural, cald, ca un mesaj de la mama
 - Fiecare idee pe rand nou, cu un rand gol intre ele
-- Scurt si la obiect, maxim 4-5 randuri
+- Maxim 5 randuri
 - Romana`;
 
   const sendMessage = async (userMsg) => {
@@ -508,16 +510,31 @@ Stilul tau de comunicare:
   };
 
   if(!open) return (
-    <div style={S.card}>
+    <div style={{...S.card,cursor:"pointer"}} onClick={startChat}>
       <style>{`@keyframes zoomIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}`}</style>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
         <div>
           <div style={{fontSize:11,color:"#C9A84C",letterSpacing:2,textTransform:"uppercase"}}>AI Coach</div>
-          <div style={{fontSize:13,color:"#555",marginTop:2}}>{messages.length>0?"Conversatie activa":"Feedback al zilei"}</div>
+          <div style={{fontSize:13,color:"#555",marginTop:2}}>{messages.length>0?"Conversatie activa · atinge sa continui":"Atinge sa vorbesti cu mama"}</div>
         </div>
-        <button onClick={startChat} style={{...S.btn(),fontSize:12,padding:"9px 15px"}}>
-          {messages.length>0?"Continua":"Analizeaza"}
-        </button>
+        <div style={{fontSize:24}}>👑</div>
+      </div>
+    </div>
+  );
+
+  if(!fullscreen) return (
+    <div style={{...S.card,cursor:"pointer"}} onClick={()=>setFullscreen(true)}>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+        <div>
+          <div style={{fontSize:11,color:"#C9A84C",letterSpacing:2,textTransform:"uppercase"}}>AI Coach</div>
+          <div style={{fontSize:13,color:"#555",marginTop:2,maxWidth:220,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>
+            {messages.filter(m=>m.role==="assistant").slice(-1)[0]?.display||"Conversatie activa"}
+          </div>
+        </div>
+        <div style={{display:"flex",gap:8,alignItems:"center"}}>
+          <div style={{fontSize:20}}>👑</div>
+          <button onClick={e=>{e.stopPropagation();setOpen(false);setFullscreen(false);}} style={{background:"none",border:"none",color:"#555",cursor:"pointer",fontSize:18,padding:"2px 6px"}}>×</button>
+        </div>
       </div>
     </div>
   );

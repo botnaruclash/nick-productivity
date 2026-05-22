@@ -441,36 +441,92 @@ function ActivityCard({ activity, onDelete }) {
 
 // ─── AI COACH ─────────────────────────────────────────────────────────────────
 function AICoach({ dayData }) {
-  const [insight,setInsight]=useState("");
-  const [loading,setLoading]=useState(false);
-  const acts=dayData.activities||[];
+  const [messages, setMessages] = useState([]);
+  const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [open, setOpen] = useState(false);
+  const acts = dayData.activities||[];
 
-  const analyze = async () => {
-    setLoading(true);setInsight("");
-    const actSummary=acts.map(a=>getType(a.type).label+": "+fmtDur(a.duration)+", rating "+a.rating+"/5, mood "+MOOD_LABELS[a.mood]+", motivatie "+a.motivation+"/5"+(a.steps?", "+a.steps+" pasi":"")+(a.comment?", \""+a.comment+"\"":"")).join("\n");
-    const sleepTotal=(dayData.sleep||[]).reduce((s,e)=>s+e.hours,0);
-    const foodList=(dayData.food||[]).map(f=>`${f.text} ${f.grams}g`).join(", ")||"nimic";
-    const waterL=((dayData.water||0)/1000).toFixed(2);
+  const buildContext = () => {
+    const actSummary = acts.map(a=>getType(a.type).label+": "+fmtDur(a.duration)+", rating "+a.rating+"/5"+(a.steps?", "+a.steps+" pasi":"")+(a.comment?", \""+a.comment+"\"":"")).join("\n")||"niciuna";
+    const sleepTotal = (dayData.sleep||[]).reduce((s,e)=>s+e.hours,0);
+    const foodList = (dayData.food||[]).map(f=>f.text+" "+f.grams+"g").join(", ")||"nimic";
+    const waterL = ((dayData.water||0)/1000).toFixed(2);
+    return "DATE AZI:\nActivitati:\n"+actSummary+"\nSomn: "+sleepTotal+"h\nApa: "+waterL+"L\nMancare: "+foodList;
+  };
+
+  const SYSTEM = "Esti AI Coach personal pentru Nick, 18 ani, Chisinau. Obiectiv: 100k euro vara asta prin vanzari B2B. Program fix: Calisthenics Lu/Ma/Jo/Vi 07-10, Inot Mi/Sa 07-11, Vioara Ma 16:30 si Jo 12:30, Climbing Mi 16:30 si Sa 12:00, Biserica Du 08:30. Target: 6h work/zi. Fii direct, sincer, scurt. Romana.";
+
+  const sendMessage = async (userMsg) => {
+    const newMessages = [...messages, {role:"user", content:userMsg}];
+    setMessages(newMessages);
+    setInput("");
+    setLoading(true);
     try {
-      const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1000,system:`Ești coach de productivitate dur și sincer pentru un tânăr de 18 ani din Chișinău. Obiectiv: €100k vara asta prin vânzări B2B (AI lead triage pentru real estate). Program: Calisthenics Lu/Ma/Jo/Vi 07-10, Înot Mi/Sâ 07-11, Vioară Ma 16:30 și Jo 12:30, Climbing Mi 16:30 și Sâ 12:00, Biserică Du 08:30. Minimum 6h work/zi. Sistem: 10min staring at wall + 2h deep work repeat. Analizează ziua complet și oferă: 1) Evaluare sinceră (2 propoziții) 2) Ce a mers bine 3) Ce schimbi imediat 4) Recomandare pentru mâine. Fii direct, fără bullshit. Română. Max 150 cuvinte.`,messages:[{role:"user",content:`Activități:\n${actSummary||"niciuna"}\nSomn: ${sleepTotal}h\nApă: ${waterL}L\nMâncare: ${foodList}\n\nFeedback sincer:`}]})});
-      const d=await res.json();
-      if(d.error) setInsight("API error: "+d.error.message);
-      else if(d.content&&d.content.length>0) setInsight(d.content.map(c=>c.text||"").join("").trim());
-      else setInsight("Raspuns gol. Incearca din nou.");
-    } catch(e) { setInsight("Eroare retea: "+e.message); }
+      let apiMessages = newMessages;
+      if(messages.length === 0) {
+        apiMessages = [{role:"user", content:buildContext()+"\n\nAnalizeaza ziua mea pana acum si spune-mi sincer cum stau."}, {role:"user", content:userMsg}];
+        apiMessages = [{role:"user", content:buildContext()+"\n\nAnalizeaza ziua mea pana acum."}];
+      }
+      const res = await fetch("/api/ai", {
+        method:"POST", mode:"cors",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({model:"claude-sonnet-4-5", max_tokens:400, system:SYSTEM, messages:newMessages.length===1?[{role:"user",content:buildContext()+"\n\nAnalizeaza ziua mea pana acum si spune-mi cum stau."}]:newMessages})
+      });
+      const d = await res.json();
+      const reply = d.error ? "Eroare: "+d.error.message : (d.content&&d.content.length>0 ? d.content.map(c=>c.text||"").join("").trim() : "Eroare API.");
+      setMessages([...newMessages, {role:"assistant", content:reply}]);
+    } catch(e) {
+      setMessages([...newMessages, {role:"assistant", content:"Eroare retea: "+e.message}]);
+    }
     setLoading(false);
   };
 
-  return (
+  const startChat = () => {
+    setOpen(true);
+    if(messages.length === 0) sendMessage("start");
+  };
+
+  if(!open) return (
     <div style={S.card}>
-      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:insight?16:0,gap:12}}>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
         <div>
           <div style={{fontSize:11,color:"#C9A84C",letterSpacing:2,textTransform:"uppercase"}}>AI Coach</div>
           <div style={{fontSize:13,color:"#555",marginTop:2}}>Feedback complet al zilei</div>
         </div>
-        <button onClick={analyze} disabled={loading} style={{...S.btn(),fontSize:12,padding:"9px 15px",opacity:loading?.6:1}}>{loading?"...":"Analizează"}</button>
+        <button onClick={startChat} style={{...S.btn(),fontSize:12,padding:"9px 15px"}}>Analizeaza</button>
       </div>
-      {insight&&<div style={{background:"#0a0a0a",border:"1px solid #1a1a1a",borderRadius:10,padding:16,fontSize:13,color:"#ededed",lineHeight:1.75,whiteSpace:"pre-wrap"}}>{insight}</div>}
+    </div>
+  );
+
+  return (
+    <div style={{...S.card,padding:0,overflow:"hidden"}}>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"14px 18px",borderBottom:"1px solid #1a1a1a"}}>
+        <div style={{fontSize:11,color:"#C9A84C",letterSpacing:2,textTransform:"uppercase"}}>AI Coach</div>
+        <button onClick={()=>setOpen(false)} style={{background:"none",border:"none",color:"#555",cursor:"pointer",fontSize:20,padding:"2px 8px"}}>x</button>
+      </div>
+      <div style={{height:300,overflowY:"auto",padding:"16px 18px",display:"flex",flexDirection:"column",gap:12}}>
+        {messages.filter(m=>m.content!=="start").map((m,i)=>(
+          <div key={i} style={{display:"flex",justifyContent:m.role==="user"?"flex-end":"flex-start"}}>
+            <div style={{maxWidth:"85%",padding:"10px 14px",
+              borderRadius:m.role==="user"?"14px 14px 4px 14px":"14px 14px 14px 4px",
+              background:m.role==="user"?"#ededed":"#111",
+              color:m.role==="user"?"#000":"#ededed",
+              fontSize:13,lineHeight:1.6}}>
+              {m.content}
+            </div>
+          </div>
+        ))}
+        {loading&&<div style={{display:"flex",justifyContent:"flex-start"}}><div style={{padding:"10px 14px",borderRadius:"14px 14px 14px 4px",background:"#111",color:"#555",fontSize:18}}>···</div></div>}
+      </div>
+      <div style={{display:"flex",gap:8,padding:"12px 18px",borderTop:"1px solid #1a1a1a"}}>
+        <input value={input} onChange={e=>setInput(e.target.value)}
+          onKeyDown={e=>{if(e.key==="Enter"&&input.trim()&&!loading) sendMessage(input.trim());}}
+          placeholder="Scrie un mesaj..." style={{...S.input,flex:1,fontSize:13}} disabled={loading}/>
+        <button onClick={()=>{if(input.trim()&&!loading) sendMessage(input.trim());}}
+          disabled={loading||!input.trim()}
+          style={{...S.btn(),padding:"10px 16px",fontSize:13,opacity:(loading||!input.trim())?.5:1}}>→</button>
+      </div>
     </div>
   );
 }
@@ -808,11 +864,11 @@ function ScheduleView() {
               marginLeft:isActive?"-10px":0,paddingLeft:isActive?"10px":0}}>
               <div style={{position:"absolute",left:isActive?-14:-20,top:isActive?16:6,
                 width:isActive?14:8,height:isActive?14:8,borderRadius:"50%",
-                background:isActive?"#3b82f6":"#ededed",
+                background:isActive?"#0070f3":b.fixed?"#00000033":"#eaeaea",
                 border:`2px solid ${isActive?"#0070f3":b.fixed?"#00000066":"#d4d4d4"}`,
                 boxShadow:isActive?"0 0 10px #C9A84C88":"none",zIndex:1}}/>
               <div style={{minWidth:90,fontSize:12,paddingTop:2,fontVariantNumeric:"tabular-nums",
-                color:isActive?"#3b82f6":"#888",fontWeight:isActive?700:400}}>{b.time}</div>
+                color:isActive?"#3b82f6":b.fixed?"#888":"#444",fontWeight:isActive?700:400}}>{b.time}</div>
               <div style={{fontSize:13,paddingTop:2,
                 color:"#888",
                 fontWeight:400}}>
@@ -908,7 +964,7 @@ function StatsView({ data }) {
     {key:"work",label:"Work",color:"#C9A84C",unit:"h",desc:"Ore de work pe zi"},
     {key:"sleep",label:"Somn",color:"#5A6EBF",unit:"h",desc:"Ore de somn pe zi"},
     {key:"water",label:"Apă",color:"#3A9BE0",unit:"L",desc:"Litri de apă pe zi"},
-    
+    {key:"sport",label:"Efort fizic",color:"#6DBE6D",unit:"/10",desc:"Scor efort fizic (1-10)"},
   ];
 
   return (
@@ -1028,7 +1084,7 @@ export default function App() {
   const SUB_TABS=[{id:"activities",label:"Activități"},{id:"sleep",label:"Somn"},{id:"water",label:"Apă"},{id:"food",label:"Mâncare"},{id:"sport",label:"Sport AI"}];
 
   return(
-    <div style={{minHeight:"100vh",background:"#000000",borderLeft:"none",borderRight:"none",outline:"none",color:"#ededed",fontFamily:"Inter,-apple-system,sans-serif",maxWidth:"100%",margin:0,padding:"0 0 90px"}}>
+    <div style={{minHeight:"100vh",background:"#000000",color:"#ededed",fontFamily:"Inter,-apple-system,sans-serif",maxWidth:"100%",margin:0,padding:"0 0 90px"}}>
       <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
       <style>{`
         * { -webkit-font-smoothing: antialiased; box-sizing: border-box; }
@@ -1039,7 +1095,7 @@ export default function App() {
       `}</style>
 
       {/* ── HEADER ── */}
-      <div style={{padding:"20px 20px 0",paddingBottom:8,marginBottom:12}}>
+      <div style={{padding:"20px 20px 0",borderBottom:`1px solid ${"#1a1a1a"}`,paddingBottom:16,marginBottom:20}}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
           <span style={{fontSize:12,fontWeight:600,color:"#ededed",letterSpacing:"-0.02em"}}>Nick Productivity</span>
           <div style={{display:"flex",alignItems:"center",gap:10}}>
@@ -1047,17 +1103,17 @@ export default function App() {
             <div style={{width:28,height:28,borderRadius:"50%",background:"#0a0a0a",border:`1px solid ${"#1a1a1a"}`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:16,cursor:"pointer"}} onClick={()=>setTab("profile")}>{profile.avatar}</div>
           </div>
         </div>
-        <div style={{fontSize:24,fontWeight:700,letterSpacing:"-0.04em",color:"#ededed",marginBottom:4,textTransform:"capitalize"}}>{todayLabel}</div>
-        <div style={{fontSize:14,color:"#888",fontWeight:400}}>Hey {profile.name}</div>
+        <div style={{fontSize:22,fontWeight:700,letterSpacing:"-0.04em",color:"#ededed",marginBottom:4,textTransform:"capitalize"}}>{todayLabel}</div>
+        <div style={{fontSize:13,color:"#555",fontWeight:400}}>Hey {profile.name}</div>
       </div>
 
       <div style={{padding:"0 16px"}}>
 
       {/* ── MAIN TABS ── */}
-      <div style={{display:"flex",gap:0,marginBottom:24,borderBottom:`1px solid ${"#000000"}`,justifyContent:"center",overflow:"hidden"}}>
+      <div style={{display:"flex",gap:0,marginBottom:24,borderBottom:`1px solid ${"#1a1a1a"}`,overflowX:"auto"}}>
         {TABS.map(t=>(
           <button key={t.id} onClick={()=>setTab(t.id)} style={{
-            padding:"10px 0",background:"transparent",border:"none",flex:1,textAlign:"center",
+            padding:"10px 14px",background:"transparent",border:"none",
             borderBottom:tab===t.id?`2px solid ${"#ededed"}`:"2px solid transparent",
             color:tab===t.id?"#ededed":"#555",fontWeight:tab===t.id?600:400,
             fontSize:13,cursor:"pointer",fontFamily:"inherit",whiteSpace:"nowrap",
@@ -1101,7 +1157,7 @@ export default function App() {
           <div style={{display:"flex",gap:6,marginBottom:20,overflowX:"auto",paddingBottom:2}}>
             {SUB_TABS.map(t=>(
               <button key={t.id} onClick={()=>setSubTab(t.id)} style={{
-                padding:"6px 10px",borderRadius:8,fontFamily:"inherit",fontSize:11,cursor:"pointer",
+                padding:"7px 16px",borderRadius:8,fontFamily:"inherit",fontSize:12,cursor:"pointer",
                 border:`1px solid ${subTab===t.id?"#ededed":"#1a1a1a"}`,
                 background:subTab===t.id?"#ededed":"transparent",
                 color:subTab===t.id?"#000":"#555",
